@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{%block body%}
+<div class="page-header">
+  <h2>Liste des Communs</h2>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    {% if private_product_list %}
+    <h4>Privés</h4>
+      <table class="table table-striped">
+        <thead>
+          <th>Nom</th>
+          <th>Prix actuel</th>
+          <th>Nombre d'utilisations</th>
+        </thead>
+        <tbody>
+        {% for product in private_product_list %}
+          <tr>
+            <td><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></td>
+            <td>{{ product.price }} €</td>
+            <td>{{ product.nb_use }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Aucun produit privé</p>
+    {% endif %}
+
+    {% if public_product_list %}
+    <h4> Publics </h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Prix actuel</th>
+            <th>Nombre d'utilisations</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for product in public_product_list %}
+          <tr>
+            <td><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></td>
+            <td>{{ product.price }} €</td>
+            <td>{{ product.nb_use }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p> Aucun Produit Public </p>
+    {% endif %}
+  </div>
+
+  <div class="col-md-6">
+    <div class="well">
+      <h3>Nouveau Commun</h3>
+      <form action="{% url 'product_create' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="{{ form.name.id_for_label }}">Nom : </label>
+          {{ form.name }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.description.id_for_label }}">Description :</label>
+          <br/>
+          {{ form.description }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.cost.id_for_label }}">Coût : </label>
+          {{ form.cost }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.step.id_for_label }}">Marche de remboursement : </label>
+          {{ form.step }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.is_public.id_for_label }}">Public </label>
+          {{ form.is_public }}
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+      </form>
+    </div>
+  </div>
+</div>
+{%endblock%}

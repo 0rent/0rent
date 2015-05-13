@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load mathfilters %}
+{% load orent %}
+
+{%block body%}
+<div class="page-header">
+  <h2>{{ product.name }}</h2>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <table class="table table-striped">
+        <tbody>
+          <tr>
+            <td> Nombre d'utilisations </td>
+            <td>{{ product.nb_use }}</td>
+          </tr>
+          <tr>
+            <td> Coût de départ </td>
+            <td>{{ product.cost }} €</td>
+          </tr>
+          <tr>
+            <td> Prix actuel </td>
+            <td>{{ product.price }} €</td>
+          </tr>
+          <tr>
+            <td> Proposé par </td>
+            <td>{{ product.first_owner }}</td>
+          </tr>
+          <tr>
+            <td> Mise en ligne </td>
+            <td>{{ product.post_date }}</td>
+          </tr>
+          <tr>
+            <td> Dernière mise à jour </td>
+            <td>{{ product.update_date }}</td>
+          </tr>
+          {% if product.step %}
+          <tr>
+            <td> marche de remboursement </td>
+            <td>{{ product.step }} €</td>
+          </tr>
+          {% endif %}
+        </tbody>
+    </table>
+    {{ product.description }}
+    <br/>
+    <br/>
+    <a class="btn btn-primary" href="{% url 'product_use' product.id %}">Utiliser</a>
+    <br/>
+    {% if owner_list %}
+        <h3> Copropriétaires </h3>
+
+            <div class="col-md-12">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Nom de l'utilisateur</th>
+                    <th>Nombre d'utilisation</th>
+                    <th> % </th>
+                  </tr>
+                </thead>
+                <tbody>
+        {% for owner in owner_list %}
+                  <tr>
+                    <td>{{ owner.user__username }}</td>
+                    <td>{{ owner.counter }}</td>
+                    <td>{{ owner.counter|percent:product.nb_use }} %</td>
+                  </tr>
+        {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+    {% else %}
+        <p>No Owner yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="col-md-6">
+    <div class="well">
+        <h3>Modifier le Commun</h3>
+
+        <form action="{% url 'product_update' pk=product.id %}" method="post">
+        {% csrf_token %}
+          <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Nom : </label>
+            {{ form.name }}
+          </div>
+          <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description :</label>
+            <br/>
+            {{ form.description }}
+          </div>
+          <div class="form-group">
+            <label for="{{ form.is_public.id_for_label }}">Produit Public : </label>
+            {{ form.is_public }}
+          </div>
+          <button type="submit" class="btn btn-primary">Modifier</button>
+        </form>
+    </div>
+    {% if not product.is_public %}
+    <div class="well">
+        <h3>Ajouter des utilisateurs</h3>
+            <form action="{% url 'add_user_to_group' pk=product.private_group.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="{{ add_user_to_group_form.user.id_for_label }}">Utilisateurs : </label>
+              {{ add_user_to_group_form.user }}
+            </div>
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+          </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if use_list %}
+    <h3> Utilisations précédentes </h3>
+
+        <div class="col-md-12">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nom de l'utilisateur</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+    {% for use in use_list %}
+              <tr>
+                <td>{{ use.user }}</td>
+                <td>{{ use.date }}</td>
+              </tr>
+    {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+{% else %}
+    <p>Not used yet.</p>
+{% endif %}
+
+{%endblock%}
