@@ -1,0 +1,8 @@
+ effectuer des modifications aux modèles :
+
+    Modifiez les modèles (dans models.py).
+
+    Exécutez python manage.py makemigrations pour créer des migrations correspondant à ces changements.
+
+    Exécutez python manage.py migrate pour appliquer ces modifications à la base de données.
+

@@ -1,0 +1,47 @@
+# installation virtualenvwrapper
+sudo apt-get unstall virtualenvwrapper
+
+# créer l'environnement 
+mkvirtualenv 0rent --python=/usr/bin/python3 
+
+# changer d'environnement
+workon 0rent
+
+#sortir d'un environnement
+deactivate
+
+#création du répertoire
+mkdir -p ~/sources/orent
+cd ~/sources/orent
+#initialisation du gestionnaire de versions
+git init
+
+#installe git-flow
+sudo apt-get install git-flow
+
+#installe django dans l'environnement
+sudo apt-get install python3-dev gitg
+pip install -r requirements.txt
+
+# créer le projet dans le répertoire courant
+django-admin startproject orent
+
+# installe le moteur de bdd postgres
+sudo apt-get install postgresql
+# pip install psycopg2 
+
+# devenir admin postgres
+sudo su - postgres
+
+# créer utilisateur (orent)
+createuser orent -P
+# créer bdd (orent) à l'utilisateur orent
+createdb orent -O orent
+
+exit
+
+# installe la bdd django (créer les tables de base)
+./manage.py syncdb
+
+# lancer le server web
+./manage.py runserver
