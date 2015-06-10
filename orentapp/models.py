@@ -19,9 +19,8 @@ class Product(models.Model):
     post_date = models.DateField(auto_now_add=True)
     # Last modification date
     update_date = models.DateField(auto_now=True)
-    # User who finance or make the product
-    first_owner = models.ForeignKey(User)
-    # first_owner = models.ManyToManyField(User)
+    # Users who finance or make the product
+    first_owners = models.ManyToManyField(User, through='Ownership')
     is_public = models.BooleanField(default=True)
     # Group (in case of private product)
     private_group = models.OneToOneField(Group, null=True, blank=True)
@@ -81,9 +80,6 @@ class Product(models.Model):
         def impact_first_owner(what):
             """ Refund first owners. """
 
-            # LOGGER.info('FO: %s, HU: %s %s', self.first_owner_id,
-            #             hint_user_id, hint_user)
-
             if self.first_owner_id == hint_user_id:
                 profil = hint_user.profil
             else:
@@ -96,10 +92,26 @@ class Product(models.Model):
 
             # use don't allow to reach cost
             if (nb_use + 1) * step < cost:
+                # for ownership in self.ownership_set.all()
+                    # ratio = ownership.ratio
+                    # total_refunded = nb_use * price * ratio
+                    # total_refunded = total_refunded.quantize(Decimal('0.01'), decimal.ROUND_DOWN)
+                    # total_refund = (nb_use + 1)* price * ratio
+                    # total_refund = total_refund.quantize(Decimal('0.01'), decimal.ROUND_DOWN)
+                    # what = total_refund - total_refunded
+                    # impact_first_owner(what)
                 impact_first_owner(price)
 
             # use allow to reach cost
             if nb_use * step < cost <= (nb_use + 1) * step:
+                # for ownership in self.ownership_set.all()
+                    # ratio = ownership.ratio
+                    # total_refunded = nb_use * price * ratio
+                    # total_refunded = total_refunded.quantize(Decimal('0.01'), decimal.ROUND_DOWN)
+                    # total_refund = cost * ratio
+                    # total_refund = total_refund.quantize(Decimal('0.01'), decimal.ROUND_DOWN)
+                    # what = total_refund - total_refunded
+                    # impact_first_owner(what)
                 # refund first owner up to the cost
                 impact_first_owner(cost - nb_use * step)
 
@@ -168,6 +180,12 @@ class Profil(models.Model):
         balance = models.DecimalField(max_digits=8,
                                       decimal_places=2,
                                       default=0)
+
+
+class Ownership(models.Model):
+    product = models.ForeignKey(Product)
+    user = models.ForeignKey(User)
+    ratio = models.DecimalField(max_digits=3, decimal_places=2)
 
 
 # SIGNAUX
